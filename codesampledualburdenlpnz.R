@@ -14,7 +14,7 @@ mozambique <- list(
   animal_value = c(30,79),       # Value of an adult pig (0.025, 0.975) quantile
   sold = 0.33,                   # Proportion of adult pigs sold per year
   reduced_value = 0.5,           # Value reduction of infected pork
-  gni=460)                      # Gross national income
+  gni=460)                       # Gross national income
 
 
 
