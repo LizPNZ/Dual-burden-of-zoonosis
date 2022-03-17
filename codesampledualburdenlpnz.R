@@ -31,8 +31,9 @@ fit_gamma <-
     optim(c(1, 1), f, target = c(lwr, upr))
   }
 
-
+# Number of iterations
 n = 10000
+
 
 gamma_paramater_daly <- fit_gamma(mozambique$daly[1], mozambique$daly[2])$par
 gamma_parameter_num_infected <- fit_gamma(mozambique$num_infected[1], mozambique$num_infected[2])$par 
