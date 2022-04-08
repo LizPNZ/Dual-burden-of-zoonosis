@@ -1,0 +1,715 @@
+---
+title: "estimations"
+author: "Liz P. Noguera Z."
+orcid: "https://orcid.org/0000-0001-5057-8458"
+output: html_document
+#output: github_docu@ment
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+This document contains ALE and zDALYs estimations based on the findings of the systematic review
+
+Importing helper functions
+```{r, include=FALSE}
+sys.source("helper.R", envir = knitr::knit_global())
+```
+
+
+Importing data
+```{r}
+sys.source("data_shared.R", envir = knitr::knit_global())
+
+n = 100000 #number of iterations
+
+set.seed(1000)
+ 
+```
+
+
+Packages
+
+```{r}
+#library("fitdistrplus")
+#library(confintr)
+```
+
+
+
+ 1. Rabies, Africa and Asia. DOI: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2626230/pdf/15976877.pdf
+```{r}
+#### DALY estimation total
+daly_rabies_africa_asia <- runif(n, min = rabies_africa_asia$daly_total[1],
+                                 max = rabies_africa_asia$daly_total[2])
+quantile(daly_rabies_africa_asia, c(0.05,0.5,0.95))
+
+#### DALY estimation total without post-exposure treatment
+daly_rabies_africa_asia_no_tx <- runif(n, min = rabies_africa_asia$daly_no_tx[1],
+                                       max = rabies_africa_asia$daly_no_tx[2])
+quantile(daly_rabies_africa_asia_no_tx, c(0.05,0.5,0.95))
+
+#### DALY estimation Africa
+daly_rabies_africa <- runif(n, min = rabies_africa_asia$daly_africa[1],
+                            max = rabies_africa_asia$daly_africa[2])
+quantile(daly_rabies_africa , c(0.05,0.5,0.95))
+
+#### DALY estimation Asia
+daly_rabies_asia <- runif(n, min = rabies_africa_asia$daly_asia[1],
+                          max = rabies_africa_asia$daly_asia[2])
+quantile(daly_rabies_asia , c(0.05,0.5,0.95))
+
+##### ALE estimation total
+ale_rabies_africa_asia_total <- rabies_africa_asia$livestock_loss/rabies_africa_asia$gni_total       
+quantile(ale_rabies_africa_asia_total, c(0.05,0.5,0.95))
+
+##### ALE estimation Africa
+ale_rabies_africa <- rabies_africa_asia$livestock_loss_africa/rabies_africa_asia$gni_africa    
+quantile(ale_rabies_africa, c(0.05,0.5,0.95))
+
+##### ALE estimation Asia
+ale_rabies_asia <- rabies_africa_asia$livestock_loss_asia/rabies_africa_asia$gni_asia   
+quantile(ale_rabies_asia, c(0.05,0.5,0.95))
+
+
+##### zDALY estimation total
+zdaly_rabies_africa_asia <- daly_rabies_africa_asia + ale_rabies_africa_asia_total    
+quantile(zdaly_rabies_africa_asia, c(0.05,0.5,0.95))
+
+brucellosis_kz_daly <- rpois(n, kazakhstan_brucellosis$daly)
+quantile(brucellosis_kz_daly, c(0.025,0.5,0.975))
+
+##### zDALY estimation total without post-exposure treatment
+zdaly_rabies_africa_asia_no_tx <- daly_rabies_africa_asia_no_tx + ale_rabies_africa_asia_total    
+quantile(zdaly_rabies_africa_asia_no_tx, c(0.05,0.5,0.95))
+
+##### zDALY estimation Africa
+zdaly_rabies_africa <- daly_rabies_africa + ale_rabies_africa
+quantile(zdaly_rabies_africa, c(0.05,0.5,0.95))
+
+##### zDALY estimation Asia
+zdaly_rabies_asia <- daly_rabies_asia + ale_rabies_asia   
+quantile(zdaly_rabies_asia, c(0.05,0.5,0.95))
+```
+
+
+ 2. Cystic echinococcosis, Worldwide. DOI: 10.3201/eid1202.050499 
+```{r}
+##### Creates randomly a sequence between a range
+daly_unadj_random <- runif(n, min = world_CE$daly_unadjusted[1],
+                           max = world_CE$daly_unadjusted[2])
+quantile(daly_unadj_random, c(0.025,0.5,0.975))
+
+daly_adj_random <- runif(n, min = world_CE$daly_adjusted[1],
+                         max = world_CE$daly_adjusted[2])
+quantile(daly_adj_random, c(0.025,0.5,0.975))
+
+animal_loss_unadj_random <- runif(n, min = world_CE$animal_loss_unadjusted[1],
+                                  max = world_CE$animal_loss_unadjusted[2])
+
+animal_loss_adj_random <- runif(n, min = world_CE$animal_loss_adjusted[1],
+                                max = world_CE$animal_loss_adjusted[2])
+
+##### ALE estimation
+
+world_CE_ale_unadj <- animal_loss_unadj_random / mozambique$gni        ###### unadjusted ALE
+quantile(world_CE_ale_unadj , c(0.025,0.5,0.975))
+
+
+world_CE_ale_adj <- animal_loss_adj_random / mozambique$gni           ###### adjusted ALE
+quantile(world_CE_ale_adj , c(0.025,0.5,0.975))
+
+##### zDALY estimation
+world_CE_zdaly_unadj <- daly_unadj_random + world_CE_ale_unadj        ###### unadjusted zDALY
+quantile(world_CE_zdaly_unadj, c(0.025,0.5,0.975))
+
+world_CE_zdaly_adj <- daly_adj_random + world_CE_ale_adj              ###### adjusted zDALY
+quantile(world_CE_zdaly_adj, c(0.025,0.5,0.975))
+```
+
+
+
+ 3. Echinococcosis, Shiqu County, China. DOI: https://doi.org/10.4269/ajtmh.2005.73.2
+```{r}
+##### Creates randomly a sequence between a range
+animal_loss_random1 <- runif(n, min = china_CE$animal_loss_1[1], max = china_CE$animal_loss_1[2])
+
+#animal_loss_random1 <- rgamma(n, mean= 278292)
+animal_loss_random2 <- runif(n, min = china_CE$animal_loss_2[1], max = china_CE$animal_loss_2[2])
+
+
+##### ALE estimation
+china_CE_ale1 <- animal_loss_random1 / china_CE$gni           
+quantile(china_CE_ale1, c(0.025,0.5,0.975))
+
+china_CE_ale2 <- animal_loss_random2 / china_CE$gni           
+quantile(china_CE_ale2, c(0.025,0.5,0.975))
+
+##### zDALY estimation
+china_CE_zdaly1 <- china_CE$daly + china_CE_ale1     
+quantile(china_CE_zdaly1, c(0.025,0.5,0.975))
+
+china_CE_zdaly2 <- china_CE$daly + china_CE_ale2      
+quantile(china_CE_zdaly2, c(0.025,0.5,0.975))
+```
+
+
+
+ 4. Cysticercosis (Taenia solium), Mozambique. DOI: https://doi.org/10.1186/s12879-018-3030-z
+```{r, warning=FALSE}
+##### Fitting gamma distribution
+gamma_paramater_daly <- fit_gamma(mozambique$daly[1], mozambique$daly[2])$par
+gamma_parameter_num_infected <- fit_gamma(mozambique$num_infected[1], mozambique$num_infected[2])$par 
+gamma_parameter_animal_value <- fit_gamma(mozambique$animal_value[1], mozambique$animal_value[2])$par 
+
+
+total_infected <- rgamma(n, gamma_parameter_num_infected[1], gamma_parameter_num_infected[2])
+animal_value_total <- rgamma(n, gamma_parameter_animal_value[1], gamma_parameter_animal_value[2])
+
+##### Estimating animal loss
+mozambique_total_animal_loss <- total_infected * animal_value_total * mozambique$reduced_value * mozambique$sold
+
+mozambique_total_animal_loss1 <- total_infected * animal_value_total * mozambique$reduced_value 
+quantile(mozambique_total_animal_loss1, c(0.025,0.5,0.975))
+
+## DALY estimation
+mozambique_daly <- rgamma(n, gamma_paramater_daly[1], gamma_paramater_daly[2])
+quantile(mozambique_daly, c(0.025,0.5,0.975))
+
+## ALE estimation
+mozambique_ale <- mozambique_total_animal_loss / mozambique$gni
+quantile(mozambique_ale , c(0.025,0.5,0.975))
+
+## ALE without the proportion of pigs sold
+mozambique_ale1 <- mozambique_total_animal_loss1 / mozambique$gni
+quantile(mozambique_ale1 , c(0.025,0.5,0.975))
+
+## zDALY estimation
+mozambique_zdaly <- mozambique_ale + mozambique_daly
+quantile(mozambique_zdaly, c(0.025,0.5,0.975))
+
+
+## zDALY without the proportion of pigs sold
+mozambique_zdaly1 <- mozambique_ale1 + mozambique_daly
+quantile(mozambique_zdaly1, c(0.025,0.5,0.975))
+```
+
+
+ 5. Cysticercosis (Taenia solium), Cameroon. DOI: https://doi.org/10.1371/journal.pntd.0000406
+```{r}
+##### Creates randomly a sequence between a range
+animal_loss <- runif(n, min = cameroon$animal_loss[1], max = cameroon$animal_loss[2])
+
+##### DALY estimation
+cameroon_daly <- runif(n, min = cameroon$daly[1], max = cameroon$daly[2])
+quantile(cameroon_daly, c(0.025,0.5,0.975))
+
+
+##### ALE estimation
+cameroon_ALE <- animal_loss/ cameroon$gni           
+quantile(cameroon_ALE, c(0.025,0.5,0.975))
+
+
+##### zDALY estimation
+cameroon_zdaly <- cameroon_daly + cameroon_ALE     
+quantile(cameroon_zdaly, c(0.025,0.5,0.975))
+```
+
+
+
+ 6. Cystic echinococcosis, Peru. DOI: https://doi.org/10.1371/journal.pntd.0001179
+```{r}
+##### Creates randomly a sequence between a range
+peru_animal_loss <- runif(n, min = peru$animal_loss[1], max = peru$animal_loss[2])
+
+##### ALE estimation
+peru_ALE <- peru_animal_loss/ peru$gni           
+quantile(peru_ALE, c(0.025,0.5,0.975))
+
+##### zDALY estimation
+peru_zdaly <- peru$daly_total + peru_ALE    
+quantile(peru_zdaly, c(0.025,0.5,0.975))
+```
+
+ 7. Rabies, Worldwide. DOI: https://doi.org/10.1371/journal.pntd.0003709
+```{r}
+
+#### Select min and max of two columns for each row to simulate an uniform distribution
+f <- Vectorize(function(x,y) runif(n,min=x,max=y),vectorize.args = c("x","y"))
+
+ asia2_ale  <- with(asia2,f(livestock_loss_lower,livestock_loss_upper)) / mean(asia2$gni_2010)
+ quantile(asia2_ale, c(0.025,0.5,0.975))
+ 
+ asia3_ale  <- with(asia3,f(livestock_loss_lower,livestock_loss_upper)) / mean(asia3$gni_2010)
+ quantile(asia3_ale, c(0.025,0.5,0.975))
+ 
+ asia4_ale  <- with(asia4,f(livestock_loss_lower,livestock_loss_upper)) / mean(asia4$gni_2010)
+ quantile(asia4_ale, c(0.025,0.5,0.975))
+ 
+ china_ale  <- with(china,f(livestock_loss_lower,livestock_loss_upper)) / mean(china$gni_2010)
+ quantile(china_ale, c(0.025,0.5,0.975))
+ 
+ india_ale  <- with(india,f(livestock_loss_lower,livestock_loss_upper)) / mean(india$gni_2010)
+ quantile(india_ale, c(0.025,0.5,0.975))
+ 
+ indonesia_ale  <- with(indonesia,f(livestock_loss_lower,livestock_loss_upper)) / mean(indonesia$gni_2010)
+ quantile(indonesia_ale, c(0.025,0.5,0.975))
+ 
+ north_africa_ale  <- with(north_africa,f(livestock_loss_lower,
+                                          livestock_loss_upper)) / mean(north_africa$gni_2010)
+ quantile(north_africa_ale, c(0.025,0.5,0.975))
+ 
+ congo_basin_ale  <- with(congo_basin,f(livestock_loss_lower,
+                                        livestock_loss_upper)) / mean(congo_basin$gni_2010)
+ quantile(congo_basin_ale, c(0.025,0.5,0.975))
+ 
+ west_africa_ale  <- with(west_africa,f(livestock_loss_lower,
+                                        livestock_loss_upper)) / mean(west_africa$gni_2010)
+ quantile(west_africa_ale, c(0.025,0.5,0.975))
+ 
+ sadc_ale  <- with(sadc,f(livestock_loss_lower,
+                          livestock_loss_upper)) / mean(sadc$gni_2010)
+ quantile(sadc_ale, c(0.025,0.5,0.975))
+ 
+ andean_ale  <- with(andean,f(livestock_loss_lower,
+                              livestock_loss_upper)) / mean(andean$gni_2010)
+ quantile(andean_ale , c(0.025,0.5,0.975))
+ 
+ brazil_ale  <- with(brazil,f(livestock_loss_lower,
+                              livestock_loss_upper)) / mean(brazil$gni_2010)
+ quantile(brazil_ale , c(0.025,0.5,0.975))
+ 
+ caribbean_ale  <- with(caribbean,f(livestock_loss_lower,
+                                    livestock_loss_upper)) / mean(caribbean$gni_2010)
+ quantile(caribbean_ale, c(0.025,0.5,0.975))
+
+ central_ale  <- with(central,f(livestock_loss_lower,
+                                livestock_loss_upper)) / mean(central$gni_2010)
+ quantile(central_ale, c(0.025,0.5,0.975))
+ 
+ southern_cone_ale  <- with(southern_cone,f(livestock_loss_lower,
+                                            livestock_loss_upper)) / mean(southern_cone$gni_2010)
+ quantile(southern_cone_ale, c(0.025,0.5,0.975))
+ 
+ eastern_europe_ale  <- with(eastern_europe,f(livestock_loss_lower,
+                                              livestock_loss_upper)) / mean(eastern_europe$gni_2010)
+ quantile(eastern_europe_ale, c(0.025,0.5,0.975))
+ 
+ eurasia_ale  <- with(eurasia,f(livestock_loss_lower,
+                                livestock_loss_upper)) / mean(eurasia$gni_2010)
+ quantile(eurasia_ale, c(0.025,0.5,0.975))
+ 
+ 
+ middle_east_ale <- with(middle_east,f(livestock_loss_lower,
+                                       livestock_loss_upper)) / mean(middle_east$gni_2010)
+ quantile( middle_east_ale, c(0.025,0.5,0.975)
+           
+           
+#### Total ALE: With the data of the study
+ 
+ total_ale_rabies_world1 <- world_rabies$animal_loss / mean(world_rabies_data$gni_2010) 
+ quantile(total_ale_rabies_world1, c(0.025,0.5,0.975))
+ 
+
+ #### Total ALE: based on our simulates
+  total_ale_rabies_world2 <- rpois (n, c(asia2_ale,asia3_ale, asia4_ale, china_ale, india_ale,
+                                   indonesia_ale, north_africa_ale, congo_basin_ale,
+                                   west_africa_ale, sadc_ale, andean_ale, brazil_ale,caribbean_ale,
+                                   central_ale,  southern_cone_ale, eastern_europe_ale, eurasia_ale,
+                                   middle_east_ale))   #try with the results above
+  quantile(total_ale_rabies_world2, c(0.025,0.5,0.975))
+  
+  
+ ######################### 
+ #### zDALY = DALY + ALE
+ 
+asia2_zdaly <-  runif(n, min = 80000 , max = 655000) + asia2_ale
+quantile(asia2_zdaly, c(0.025,0.5,0.975))
+
+
+asia3_zdaly <-  runif(n, min = 75000 , max = 853000) + asia3_ale
+quantile(asia3_zdaly, c(0.025,0.5,0.975))
+
+
+asia4_zdaly <-  runif(n, min = 10000 , max = 83000) + asia4_ale
+quantile(asia4_zdaly, c(0.025,0.5,0.975))
+
+
+china_zdaly <-  runif(n, min = 60000, max = 674000) + china_ale
+quantile(china_zdaly, c(0.025,0.5,0.975))
+
+
+india_zdaly <- runif(n, min = 377000, max = 3436000) + india_ale
+quantile(india_zdaly, c(0.025,0.5,0.975))
+ 
+ 
+indonesia_zdaly <- runif(n, min = 12000, max = 198000) + indonesia_ale
+quantile(indonesia_zdaly, c(0.025,0.5,0.975))
+ 
+
+ north_africa_zdaly <- runif(n, min = 38000, max = 467000) + north_africa_ale
+ quantile(north_africa_zdaly, c(0.025,0.5,0.975))
+ 
+ 
+ congo_basin_zdaly <- runif(n, min = 244000,
+                            max = 1031000) + congo_basin_ale 
+ quantile(congo_basin_zdaly, c(0.025,0.5,0.975))
+
+ 
+ west_africa_zdaly <- runif(n, min = 206000,
+                            max = 971000) + west_africa_ale 
+ quantile(west_africa_zdaly , c(0.025,0.5,0.975))
+ 
+
+ sadc_zdaly  <- runif(n, min = 157000, max = 1713000) + sadc_ale 
+ quantile(sadc_zdaly , c(0.025,0.5,0.975))
+ 
+ andean_zdaly  <- runif(n, min = 0, max = 4000) + andean_ale 
+ quantile(andean_zdaly , c(0.025,0.5,0.975))
+ 
+ brazil_zdaly  <- runif(n, min = 0, max = 2000) +  brazil_ale  
+ quantile(brazil_zdaly, c(0.025,0.5,0.975))
+ 
+ caribbean_zdaly  <- runif(n, min = 4000, max = 17000) +  caribbean_ale 
+ quantile(caribbean_zdaly, c(0.025,0.5,0.975))
+ 
+ central_zdaly  <- runif(n, min =0, max = 3000) +  central_ale 
+ quantile(central_zdaly, c(0.025,0.5,0.975))
+ 
+ southern_cone_zdaly  <- runif(n, min =0, max = 1000) +  southern_cone_ale 
+ quantile(southern_cone_zdaly, c(0.025,0.5,0.975))
+
+ eastern_europe_zdaly  <- runif(n, min =0, max = 5000) +  eastern_europe_ale
+ quantile(eastern_europe_zdaly, c(0.025,0.5,0.975))
+
+ eurasia_zdaly  <- runif(n, min =46000, max = 368000) +  eurasia_ale 
+ quantile(eurasia_zdaly, c(0.025,0.5,0.975))
+
+ middle_east_zdaly <-  runif(n, min =6000, max = 39000) + middle_east_ale 
+ quantile(middle_east_zdaly, c(0.025,0.5,0.975))
+ 
+ 
+ zdaly_total_rabies_world1 <- runif(n, min = world_rabies$daly[1],
+                                    max = world_rabies$daly[2]) + total_ale_rabies_world1
+ quantile(zdaly_total_rabies_world1 , c(0.025,0.5,0.975))
+ 
+ zdaly_total_rabies_world2 <- runif(n, min = world_rabies$daly[1],
+                                    max = world_rabies$daly[2]) + total_ale_rabies_world2
+ quantile(zdaly_total_rabies_world2 , c(0.025,0.5,0.975))
+ 
+```
+ 
+ 8. Q fever, Netherlands. DOI: https://doi.org/10.1016/j.prevetmed.2013.06.002
+```{r}
+
+#### DALY estimation
+netherlands_daly <- runif(n, min = netherlands$daly[1], max = netherlands$daly[2])
+quantile(netherlands_daly, c(0.025,0.5,0.975))
+
+netherlands_animal_loss <- netherlands_daly * netherlands$infected_animal
+
+##### ALE estimation
+netherlands_ALE <- netherlands_animal_loss/ netherlands$gni          
+quantile(netherlands_ALE, c(0.025,0.5,0.975))
+
+##### zDALY estimation
+netherlands_zdaly <- netherlands_daly + netherlands_ALE    
+quantile(netherlands_zdaly_2007, c(0.025,0.5,0.975))
+
+###### Yearly
+netherlands_animal_loss_2007 <- runif(n, min = netherlands$animal_loss[1],
+                                      max = netherlands$animal_loss[2]) * 
+                                      netherlands$infected_animal_2007
+
+netherlands_animal_loss_2008 <- runif(n, min = netherlands$animal_loss[1],
+                                      max = netherlands$animal_loss[2]) * 
+                                      netherlands$infected_animal_2008
+
+netherlands_animal_loss_2009 <- runif(n, min = netherlands$animal_loss[1],
+                                      max = netherlands$animal_loss[2]) * 
+                                      netherlands$infected_animal_2009
+
+netherlands_animal_loss_2010 <- runif(n, min = netherlands$animal_loss[1],
+                                      max = netherlands$animal_loss[2]) * 
+                                      netherlands$infected_animal_2010
+
+netherlands_animal_loss_2011 <- runif(n, min = netherlands$animal_loss[1],
+                                      max = netherlands$animal_loss[2]) * 
+                                      netherlands$infected_animal_2011
+
+##### ALE estimation
+netherlands_ALE_2007 <- netherlands_animal_loss_2007/ netherlands$gni_2007          
+quantile(netherlands_ALE_2007, c(0.025,0.5,0.975))
+
+netherlands_ALE_2008 <- netherlands_animal_loss_2008/ netherlands$gni_2008
+
+netherlands_ALE_2009 <- netherlands_animal_loss_2009/ netherlands$gni_2009   
+
+netherlands_ALE_2010 <- netherlands_animal_loss_2010/ netherlands$gni_2010
+
+netherlands_ALE_2011 <- netherlands_animal_loss_2011/ netherlands$gni_2011   
+
+##### zDALY estimation
+netherlands_zdaly <- runif(n, min = netherlands$daly[1],
+                           max = netherlands$daly[2]) + netherlands_ALE_total     #for the period 2007-2011
+quantile(netherlands_zdaly, c(0.025,0.5,0.975))
+
+netherlands_zdaly_2007 <- runif(n, min = netherlands$daly[1],
+                                max = netherlands$daly[2]) + netherlands_ALE_2007      
+quantile(netherlands_zdaly_2007, c(0.025,0.5,0.975))
+
+netherlands_zdaly_2008 <- runif(n, min = netherlands$daly[1], 
+                                max = netherlands$daly[2]) + netherlands_ALE_2008      
+quantile(netherlands_zdaly_2008, c(0.025,0.5,0.975))
+
+netherlands_zdaly_2009 <- runif(n, min = netherlands$daly[1],
+                                max = netherlands$daly[2]) + netherlands_ALE_2009      
+quantile(netherlands_zdaly_2009, c(0.025,0.5,0.975))
+
+netherlands_zdaly_2010 <- runif(n, min = netherlands$daly[1],
+                                max = netherlands$daly[2]) + netherlands_ALE_2010      
+quantile(netherlands_zdaly_2010, c(0.025,0.5,0.975))
+
+netherlands_zdaly_2011 <- runif(n, min = netherlands$daly[1],
+                                max = netherlands$daly[2])  + netherlands_ALE_2011      
+quantile(netherlands_zdaly_2011, c(0.025,0.5,0.975))
+```
+
+ 9. Cysticercosis (Taenia solium), Tanzania. DOI: https://doi.org/10.1016/j.actatropica.2015.12.021
+```{r, warning=FALSE}
+# Fitting gamma distribution
+tanzania_gamma_paramater_daly <- fit_gamma(tanzania$daly[1], tanzania$daly[2])$par
+
+tanzania_animal_loss <- runif(n, min = tanzania$pig_loss[1],
+                                       max = tanzania$pig_loss[2])
+
+## DALY estimation
+tanzania_daly <- rgamma(n, tanzania_gamma_paramater_daly[1], tanzania_gamma_paramater_daly[2])
+quantile(tanzania_daly, c(0.025,0.5,0.975))
+
+## ALE estimation
+tanzania_ale <- tanzania_animal_loss/ tanzania$gni
+quantile(tanzania_ale , c(0.025,0.5,0.975))
+
+
+## zDALY estimation
+tanzania_zdaly <- tanzania_ale + tanzania_daly
+quantile(tanzania_zdaly, c(0.025,0.5,0.975))
+
+```
+
+ 10. Rabies, Viet Nam. DOI: 10.1371/journal.pntd.0006866
+```{r}
+##### Creates randomly a sequence between a range for DALY at age of 26
+vietnam_daly_26 <- runif(n, min = vietnam$daly_26[10],
+                                       max = vietnam$daly_26[3])  # choosing the min and max values over 2005-2014
+quantile(vietnam_daly_26, c(0.025,0.5,0.975))                                                              
+
+##### Creates randomly a sequence between a range for DALY at age of 31
+vietnam_daly_31 <- runif(n, min = vietnam$daly_31[10],
+                                       max = vietnam$daly_31[3])
+quantile(vietnam_daly_31, c(0.025,0.5,0.975))
+
+##### Creates randomly a sequence between a range for DALY at age of 36
+vietnam_daly_36 <- runif(n, min = vietnam$daly_36[10],
+                                       max = vietnam$daly_36[3])
+quantile(vietnam_daly_36, c(0.025,0.5,0.975))
+
+## ALE estimation
+vietnam_ale <- vietnam$livestock_loss_mean/ mean(vietnam$gni)
+quantile(tanzania_ale , c(0.025,0.5,0.975))
+
+## zDALY estimation at age of 26
+vietnam_zdaly_26 <- vietnam_ale + vietnam_daly_26
+quantile(vietnam_zdaly_26, c(0.025,0.5,0.975))
+
+## zDALY estimation at age of 31
+vietnam_zdaly_31 <- vietnam_ale + vietnam_daly_31
+quantile(vietnam_zdaly_31, c(0.025,0.5,0.975))
+
+## zDALY estimation at age of 36
+vietnam_zdaly_36 <- vietnam_ale + vietnam_daly_36
+quantile(vietnam_zdaly_36, c(0.025,0.5,0.975))
+```
+ 
+ 11. Rabies, Kazakhstan. DOI: 10.1371/journal.pntd.0004889
+```{r, warning=FALSE}
+
+##### Fitting gamma distribution
+gamma_paramater_daly_rabies_kz <- fit_gamma(kz_rabies$daly[1], kz_rabies$daly[2])$par
+gamma_paramater_daly_rabies_kz_without_pep <- fit_gamma(kz_rabies$daly_without_PEP[1],
+                                                        kz_rabies$daly_without_PEP[2])$par
+gamma_paramater_rabies_kz_cattle_loss <- fit_gamma(kz_rabies$cattle_loss[1],
+                                                   kz_rabies$cattle_loss[2])$par
+gamma_paramater_rabies_kz_sheep_loss <- fit_gamma(kz_rabies$sheep_loss[1],
+                                                  kz_rabies$sheep_loss[2])$par
+gamma_paramater_rabies_kz_camel_loss <- fit_gamma(kz_rabies$camel_loss[1],
+                                                  kz_rabies$camel_loss[2])$par
+gamma_paramater_rabies_kz_horse_loss <- fit_gamma(kz_rabies$horse_loss[1],
+                                                  kz_rabies$horse_loss[2])$par
+gamma_paramater_rabies_kz_total_animal_loss <- fit_gamma(kz_rabies$total_animal_loss[1],
+                                                         kz_rabies$total_animal_loss[2])$par
+
+#####  DALY
+daly_kz_rabies <-  rgamma(n, gamma_paramater_daly_rabies_kz[1],
+                          gamma_paramater_daly_rabies_kz[2])
+quantile(daly_kz_rabies, c(0.025,0.5,0.975))
+
+daly_kz_rabies_without_pep <- rgamma(n, gamma_paramater_daly_rabies_kz_without_pep[1],
+                                     gamma_paramater_daly_rabies_kz_without_pep[2])
+quantile(daly_kz_rabies_without_pep , c(0.025,0.5,0.975))
+
+##### ALE
+ale_cattle_kz_rabies <-  rgamma(n, gamma_paramater_rabies_kz_cattle_loss[1],
+                                gamma_paramater_rabies_kz_cattle_loss[2]) / kz_rabies$gni_mean
+quantile(ale_cattle_kz_rabies, c(0.025,0.5,0.975))
+
+ale_sheep_kz_rabies <-  rgamma(n, gamma_paramater_rabies_kz_sheep_loss[1],
+                               gamma_paramater_rabies_kz_sheep_loss[2]) / kz_rabies$gni_mean
+quantile(ale_sheep_kz_rabies, c(0.025,0.5,0.975))
+
+ale_camel_kz_rabies <-  rgamma(n, gamma_paramater_rabies_kz_camel_loss[1],
+                               gamma_paramater_rabies_kz_camel_loss[2]) / kz_rabies$gni_mean
+quantile(ale_camel_kz_rabies, c(0.025,0.5,0.975))
+
+ale_horse_kz_rabies <-  rgamma(n, gamma_paramater_rabies_kz_horse_loss[1],
+                               gamma_paramater_rabies_kz_horse_loss[2]) / kz_rabies$gni_mean
+quantile(ale_horse_kz_rabies, c(0.025,0.5,0.975))
+   
+ale_total_kz_rabies <-  rgamma(n, gamma_paramater_rabies_kz_total_animal_loss[1],
+                               gamma_paramater_rabies_kz_total_animal_loss[2]) / kz_rabies$gni_mean
+quantile(ale_total_kz_rabies, c(0.025,0.5,0.975))   
+   
+##### zDALY estimation
+zdaly_cattle_kz <-  daly_kz_rabies + ale_cattle_kz_rabies
+quantile(zdaly_cattle_kz, c(0.025,0.5,0.975)) 
+
+zdaly_sheep_kz <- daly_kz_rabies + ale_sheep_kz_rabies
+quantile(zdaly_sheep_kz, c(0.025,0.5,0.975)) 
+   
+zdaly_camel_kz <- daly_kz_rabies + ale_camel_kz_rabies
+quantile(zdaly_camel_kz, c(0.025,0.5,0.975))
+   
+zdaly_horse_kz <-  daly_kz_rabies + ale_horse_kz_rabies
+quantile(zdaly_horse_kz, c(0.025,0.5,0.975))
+
+zdaly_total_kz <-  daly_kz_rabies + ale_total_kz_rabies
+quantile(zdaly_total_kz, c(0.025,0.5,0.975))
+
+##### Without PEP
+zdaly_cattle_kz_without_pep <-  daly_kz_rabies_without_pep + ale_cattle_kz_rabies
+quantile(zdaly_cattle_kz_without_pep, c(0.025,0.5,0.975)) 
+
+zdaly_sheep_kz_without_pep <- daly_kz_rabies_without_pep + ale_sheep_kz_rabies
+quantile(zdaly_sheep_kz_without_pep, c(0.025,0.5,0.975)) 
+   
+zdaly_camel_kz_without_pep <- daly_kz_rabies_without_pep + ale_camel_kz_rabies
+quantile(zdaly_camel_kz_without_pep, c(0.025,0.5,0.975))
+   
+zdaly_horse_kz_without_pep <-  daly_kz_rabies_without_pep + ale_horse_kz_rabies
+quantile(zdaly_horse_kz_without_pep, c(0.025,0.5,0.975))
+
+zdaly_total_kz_without_pep <-  daly_kz_rabies_without_pep + ale_total_kz_rabies
+quantile(zdaly_total_kz_without_pep, c(0.025,0.5,0.975))
+```
+ 
+
+
+ 12. Brucellosis, Kazakhstan. DOI: 10.1111/zph.12582
+```{r}
+## Random generations of DALY
+brucellosis_kz_daly <- rpois(n, kazakhstan_brucellosis$daly)
+quantile(brucellosis_kz_daly, c(0.025,0.5,0.975))
+
+brucellosis_kz_animal_loss <- rpois(n, kazakhstan_brucellosis$livestock_loss)
+quantile(brucellosis_kz_animal_loss, c(0.025,0.5,0.975))
+
+## ALE estimation
+ale_brucellosis_kz <-  brucellosis_kz_animal_loss / kazakhstan_brucellosis$gni
+quantile(ale_brucellosis_kz , c(0.025,0.5,0.975))
+
+## zDALY estimation
+
+zdaly_brucellosis_kz <-  brucellosis_kz_daly + ale_brucellosis_kz
+quantile(zdaly_brucellosis_kz, c(0.025,0.5,0.975))
+```
+
+13.Leptospirosis, New Zealand. DOI: https://doi.org/10.1111/zph.12668
+```{r}
+##### ALE
+ale_nz <- (nz$beef_cattle_loss + nz$sheep_loss + nz$deer_loss) / nz$gni_mean
+
+##### zDALY
+nz_daly <- nz$daly_pop_at_risk + ale_nz 
+
+nz_zdaly_not_risk <- nz$daly_pop_not_at_risk + ale_nz 
+
+nz_daly_total <-  nz$total_daly + ale_nz 
+
+```
+
+ 14. Brucella, Anthrax, Tularemia, CCHF, Rabies, Cystic Echinococcosis,
+ Toxoplasmosis; Turkey. DOI: 10.33988/auvfd.789598
+```{r}
+##### Creates randomly a sequence between a range for DALY
+###### Brucella
+
+turkey_daly_brucella <- rpois(n,turkey$brucella_daly)
+quantile(turkey_daly_brucella, c(0.025,0.5,0.975))
+
+###### Anthrax
+turkey_daly_anthrax <- rpois (n,turkey$anthrax_daly)
+quantile(turkey_daly_anthrax, c(0.025,0.5,0.975)) 
+
+###### Total DALYs including Brucella, Anthrax, CCHF, Rabies, CE , Toxoplasmosis 
+turkey_daly_total <- rpois (n,turkey$total_daly)
+quantile(turkey_daly_total, c(0.025,0.5,0.975)) 
+   
+## ALE estimation
+ale_brucella_large_ruminant <- rpois(n, turkey$brucella_large_ruminant_loss) / turkey$gni_mean
+quantile(ale_brucella_large_ruminant, c(0.025,0.5,0.975))
+
+ale_brucella_small_ruminant <-  rpois(n, turkey$brucella_small_ruminant_loss) / turkey$gni_mean
+quantile(ale_brucella_small_ruminant, c(0.025,0.5,0.975))
+
+ale_brucella_total_animal <- rpois(n, turkey$brucella_total_animal_loss) / turkey$gni_mean
+quantile(ale_brucella_total_animal, c(0.025,0.5,0.975)) 
+
+ale_anthrax_large_ruminant <- rpois(n, turkey$anthrax_large_ruminant_loss) / turkey$gni_mean
+quantile(ale_anthrax_large_ruminant, c(0.025,0.5,0.975))
+
+ale_anthrax_small_ruminant <- rpois(n, turkey$anthrax_small_ruminant_loss) / turkey$gni_mean
+quantile(ale_anthrax_small_ruminant, c(0.025,0.5,0.975))
+
+ale_anthrax_total_animal <- rpois(n, turkey$anthrax_total_animal_loss) / turkey$gni_mean
+quantile(ale_anthrax_total_animal, c(0.025,0.5,0.975))
+
+ale_total_turkey <-  rpois(n, turkey$total_animal_loss) / turkey$gni_mean
+quantile(ale_total_turkey, c(0.025,0.5,0.975)) 
+
+## zDALY estimation
+zdaly_brucella_large_ruminant <- turkey_daly_brucella + ale_brucella_large_ruminant
+quantile(zdaly_brucella_large_ruminant, c(0.025,0.5,0.975))  
+
+zdaly_brucella_small_ruminant <- turkey_daly_brucella + ale_brucella_small_ruminant
+quantile(zdaly_brucella_small_ruminant, c(0.025,0.5,0.975))  
+
+zdaly_brucella_total_animal <- turkey_daly_brucella + ale_brucella_total_animal
+quantile(zdaly_brucella_total_animal, c(0.025,0.5,0.975))  
+
+zdaly_anthrax_large_ruminant <-  turkey_daly_anthrax + ale_anthrax_large_ruminant
+quantile(zdaly_anthrax_large_ruminant, c(0.025,0.5,0.975))  
+
+zdaly_anthrax_small_ruminant <- turkey_daly_anthrax + ale_anthrax_small_ruminant
+quantile(zdaly_anthrax_small_ruminant, c(0.025,0.5,0.975))
+
+zdaly_anthrax_total_animal <- turkey_daly_anthrax + ale_anthrax_total_animal
+quantile(zdaly_anthrax_total_animal, c(0.025,0.5,0.975))  
+
+zdaly_total_turkey <- turkey_daly_total + ale_total_turkey
+quantile(zdaly_total_turkey, c(0.025,0.5,0.975))  
+```
+       
