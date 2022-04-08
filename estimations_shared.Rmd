@@ -710,5 +710,12 @@ quantile(zdaly_total_turkey, c(0.025,0.5,0.975))
     zdaly_brucellosis_kz + nz_daly_total + zdaly_total_turkey
     
  quantile(global_zdaly , c(0.025,0.5,0.975))  
+ 
+ ## Global ALE
+ global_ale <- ale_rabies_africa_asia_total + world_CE_ale_adj + china_CE_ale2 + 
+            mozambique_ale + cameroon_ALE + peru_ALE + total_ale_rabies_world2 +
+            netherlands_ALE_total + tanzania_ale + vietnam_ale + ale_total_kz_rabies +
+            ale_brucellosis_kz + ale_nz + ale_total_turkey
+ quantile(global_ale, c(0.025,0.5,0.975)) 
 
 ```    
