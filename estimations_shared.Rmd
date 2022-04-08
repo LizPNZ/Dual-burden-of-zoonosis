@@ -517,6 +517,10 @@ quantile(vietnam_zdaly_31, c(0.025,0.5,0.975))
 ## zDALY estimation at age of 36
 vietnam_zdaly_36 <- vietnam_ale + vietnam_daly_36
 quantile(vietnam_zdaly_36, c(0.025,0.5,0.975))
+
+## Total zDALY
+vietnam_zdaly_total <-  (vietnam_zdaly_26 + vietnam_zdaly_31 + vietnam_zdaly_36)/3
+quantile(vietnam_zdaly_total, c(0.025,0.5,0.975))
 ```
  
  11. Rabies, Kazakhstan. DOI: 10.1371/journal.pntd.0004889
