@@ -11,14 +11,12 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
 This document contains ALE and zDALYs estimations based on the findings of the systematic review
 
 Importing helper functions
 ```{r, include=FALSE}
 sys.source("helper.R", envir = knitr::knit_global())
 ```
-
 
 Importing data
 ```{r}
@@ -27,9 +25,7 @@ sys.source("data_shared.R", envir = knitr::knit_global())
 n = 100000 #number of iterations
 
 set.seed(1000)
- 
-```
-
+ ```
 
 Packages
 
@@ -37,9 +33,6 @@ Packages
 #library("fitdistrplus")
 #library(confintr)
 ```
-
-
-
  1. Rabies, Africa and Asia. DOI: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2626230/pdf/15976877.pdf
 ```{r}
 #### DALY estimation total
@@ -95,7 +88,6 @@ zdaly_rabies_asia <- daly_rabies_asia + ale_rabies_asia
 quantile(zdaly_rabies_asia, c(0.05,0.5,0.95))
 ```
 
-
  2. Cystic echinococcosis, Worldwide. DOI: 10.3201/eid1202.050499 
 ```{r}
 ##### Creates randomly a sequence between a range
@@ -131,7 +123,6 @@ quantile(world_CE_zdaly_adj, c(0.025,0.5,0.975))
 ```
 
 
-
  3. Echinococcosis, Shiqu County, China. DOI: https://doi.org/10.4269/ajtmh.2005.73.2
 ```{r}
 ##### Creates randomly a sequence between a range
@@ -155,8 +146,6 @@ quantile(china_CE_zdaly1, c(0.025,0.5,0.975))
 china_CE_zdaly2 <- china_CE$daly + china_CE_ale2      
 quantile(china_CE_zdaly2, c(0.025,0.5,0.975))
 ```
-
-
 
  4. Cysticercosis (Taenia solium), Mozambique. DOI: https://doi.org/10.1186/s12879-018-3030-z
 ```{r, warning=FALSE}
@@ -197,7 +186,6 @@ mozambique_zdaly1 <- mozambique_ale1 + mozambique_daly
 quantile(mozambique_zdaly1, c(0.025,0.5,0.975))
 ```
 
-
  5. Cysticercosis (Taenia solium), Cameroon. DOI: https://doi.org/10.1371/journal.pntd.0000406
 ```{r}
 ##### Creates randomly a sequence between a range
@@ -207,18 +195,14 @@ animal_loss <- runif(n, min = cameroon$animal_loss[1], max = cameroon$animal_los
 cameroon_daly <- runif(n, min = cameroon$daly[1], max = cameroon$daly[2])
 quantile(cameroon_daly, c(0.025,0.5,0.975))
 
-
 ##### ALE estimation
 cameroon_ALE <- animal_loss/ cameroon$gni           
 quantile(cameroon_ALE, c(0.025,0.5,0.975))
-
 
 ##### zDALY estimation
 cameroon_zdaly <- cameroon_daly + cameroon_ALE     
 quantile(cameroon_zdaly, c(0.025,0.5,0.975))
 ```
-
-
 
  6. Cystic echinococcosis, Peru. DOI: https://doi.org/10.1371/journal.pntd.0001179
 ```{r}
