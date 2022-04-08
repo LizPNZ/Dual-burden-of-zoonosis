@@ -14,5 +14,3 @@ fit_gamma <-
   }
 
 ### Source of fit_gamma function: https://github.com/brechtdv/tsol-mozambique
-
-
