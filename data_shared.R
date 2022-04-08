@@ -10,9 +10,77 @@
 library(dplyr)
 library(tidyr)
 
+#### 1. Rabies, Africa and Asia. DOI: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2626230/pdf/15976877.pdf
+worldbank_groups <- read.csv("worldbank_groups.csv")
+worldbank_groups <- select(worldbank_groups, c(2,5))
+colnames(worldbank_groups) <- c("region", "country")
 
+worldbank<- read.csv("C:\\Users\\lnogue\\Downloads\\worldbankdata.csv")
 
-#### 1. Cystic echinococcosis, Worldwide. DOI: 10.3201/eid1202.050499 
+###### Select GNI from 2002
+gni_africa_asia <- select(worldbank, c(1,47))
+colnames(gni_africa_asia) <- c("country", "gni_2002")
+
+###### Join dataset with specific condition
+rabies_data_africa_asia <- left_join(worldbank_groups,
+                                     gni_africa_asia, by = c('country' = 'country'))
+
+###### Filter countries 
+south_asia_rabies <- rabies_data_africa_asia %>% filter(region == 'South Asia')
+
+###### Delete rows by position: selecting countries included in the study
+south_asia_rabies <- south_asia_rabies %>% 
+  filter(!row_number() %in% c(1, 6)) 
+
+east_asia_pacific_rabies <- rabies_data_africa_asia %>% filter(region == 'East Asia & Pacific')
+
+###### Selecting countries included in the study
+east_asia_pacific_rabies <- east_asia_pacific_rabies %>% 
+  filter(row_number() %in% c(3, 4, 9, 11, 13, 14, 17, 18, 20, 24, 26, 31, 35)) 
+
+###### Bind rows of two dataframes for Africa
+asia_rabies <- bind_rows(south_asia_rabies,east_asia_pacific_rabies)
+
+###### Mean GNI for Asia
+gni_asia <- mean(asia_rabies$gni_2002)
+
+##### Africa
+africa_rabies <- rabies_data_africa_asia %>% filter(region == 'Middle East & North Africa')
+africa_rabies <- africa_rabies %>% 
+  filter(row_number() %in% c(4, 5, 12, 13, 20))
+
+africa_subsaharan_rabies <- rabies_data_africa_asia %>% filter(region == 'Sub-Saharan Africa')
+africa_subsaharan_rabies  <- africa_subsaharan_rabies  %>% 
+  filter(!row_number() %in% c(11,12,27, 37,38, 39,40, 41)) 
+
+###### Bind rows of two dataframes for Africa
+africa_rabies <- bind_rows(africa_rabies,africa_subsaharan_rabies)
+
+###### Convert character into numeric variables
+gni_africa <- transform(africa_rabies, gni_2002 = as.numeric(gni_2002))
+
+###### Remove rows with NA value in any column
+gni_africa <- gni_africa %>%
+    na.omit(gni_2002)
+
+###### Mean GNI for Africa
+gni_africa <- mean(gni_africa$gni_2002)
+
+rabies_africa_asia <- list(
+  daly_africa = c(217954, 1449114),
+  daly_asia = c(302324, 1983646),
+  daly_total = c(799615, 2984109),
+  daly_no_tx = c(4848684,15264050),        # No post-exposure tx
+  livestock_loss = c(11000000,13700000),
+  livestock_loss_africa = c(1500000, 1900000),
+  livestock_loss_asia = c(9400000,11800000),
+  #gni_china = 1100,
+  #gni_india = 460,
+  gni_africa = 915,
+  gni_asia = 2550,
+  gni_total = 1684)
+ 
+#### 2. Cystic echinococcosis, Worldwide. DOI: 10.3201/eid1202.050499 
 world_CE <- list(
   daly_unadjusted = c(218515,366133),                   # Unadjusted DALY: lower and upper bound 95% CI 
   daly_adjusted = c(862119,1175654),                    # Adjusted DALY: lower and upper bound 95% CI 
@@ -21,8 +89,7 @@ world_CE <- list(
   gni = 5510                                             # Gross National Income in the study period 
 ) 
 
-
-#### 2. Echinococcosis, Shiqu County, China. DOI: https://doi.org/10.4269/ajtmh.2005.73.2
+#### 3. Echinococcosis, Shiqu County, China. DOI: https://doi.org/10.4269/ajtmh.2005.73.2
 china_CE <- list(
   daly = 1100,         
   animal_loss_1 = c(240829,318249),    # Total losses (excluding losses in calf production, carcass weight, and yak hide)
@@ -30,10 +97,7 @@ china_CE <- list(
   gni = 1133                                             
 ) 
 
-
-
-
-#### 3. Cysticercosis (Taenia solium), Mozambique. DOI: https://doi.org/10.1186/s12879-018-3030-z
+#### 4. Cysticercosis (Taenia solium), Mozambique. DOI: https://doi.org/10.1186/s12879-018-3030-z
 mozambique <- list(
   daly = c(1433,2762),           # Lower and upper bound 95% UI
   num_infected = c(2098,3133),   # Number of pigs with cysticercosis (0.025, 0.975) quantile
@@ -43,16 +107,14 @@ mozambique <- list(
   gni = 460                      # Gross National Income in the year of the study
   )                        
 
-
-#### 4. Cysticercosis (Taenia solium), Cameroon. DOI: https://doi.org/10.1371/journal.pntd.0000406
+#### 5. Cysticercosis (Taenia solium), Cameroon. DOI: https://doi.org/10.1371/journal.pntd.0000406
 cameroon <- list(
   daly = c(14108,103469),              # lower and upper bound 95% CR
   animal_loss = c(566799, 922192),    # Pig losses in $  https://fxtop.com/en/historical-currency-converter.php
   gni = 1310                          # Gross National Income in the year of the study
 )   
 
-
-#### 5. Cystic echinococcosis, Peru. DOI: https://doi.org/10.1371/journal.pntd.0001179
+#### 6. Cystic echinococcosis, Peru. DOI: https://doi.org/10.1371/journal.pntd.0001179
 peru <- list(
   daly_total = 1139,               
   daly_male = 491,
@@ -61,9 +123,7 @@ peru <- list(
   gni = 3450                          # Gross National Income provided in the study
 )   
 
-
-#### 6. Rabies, Worldwide. DOI: https://doi.org/10.1371/journal.pntd.0003709
-
+#### 7. Rabies, Worldwide. DOI: https://doi.org/10.1371/journal.pntd.0003709
 world_rabies <- list(
   daly = c(1316000,10519000),              # lower and upper bound 95% CI
   animal_loss = 2667195,
@@ -71,54 +131,48 @@ world_rabies <- list(
   gni = 3450                          # Gross National Income provided in the study
 )   
 
-# Dataset Worldbank
+###### Dataset Worldbank
 worldbank<- read.csv("worldbankdata.csv")
 
-
 gni <- select(worldbank, c(1,55))
-         
 colnames(gni) <- c("country", "gni_2010")
 
-
-# Dataset global rabies
+###### Dataset global rabies
 world_rabies <- read.csv("6rabiesdata.csv")
 
-
-# Select columns
+###### Select columns
 livestock_loss <- select(world_rabies, c(3,5,32,36,37))
 livestock_loss_subset <- select(world_rabies, c(32,36,37))
 
-
-# Remove 'commas'
+###### Remove 'commas'
 livestock_loss <- apply(livestock_loss, 2, function(x) gsub(",", "", x))
 colnames(livestock_loss) <- c('country','cluster', 'livestock_loss', 'livestock_lower', 'livestock_upper')
 
-# Convert character into numeric variables
+###### Convert character into numeric variables
 livestock_loss_subset <- transform(livestock_loss, livestock_loss=as.numeric(livestock_loss),
                                    livestock_lower=as.numeric(livestock_lower),
                                    livestock_upper=as.numeric(livestock_upper))
 
-# Select the min value between livestock_lower and livestock_upper for each row
+###### Select the min value between livestock_lower and livestock_upper for each row
 livestock_loss_subset <- livestock_loss_subset %>% rowwise() %>% 
   mutate(livestock_loss_lower = min(livestock_lower, livestock_upper))
 
 
-# Select the max value between livestock_lower and livestock_upper for each row
+###### Select the max value between livestock_lower and livestock_upper for each row
 livestock_loss_subset <- livestock_loss_subset %>% 
   rowwise() %>% 
   mutate(livestock_loss_upper = max(livestock_lower, livestock_upper))
 
-
-# Join dataset with specific condition
+###### Join dataset with specific condition
 world_rabies_data <- left_join(livestock_loss_subset, gni, by = c('country' = 'country'))
 
-# Replace NA by '0'
+###### Replace NA by '0'
 world_rabies_data <- world_rabies_data %>% mutate(across(where(is.numeric), coalesce, 0))
 
-# Convert character into factor variables
+###### Convert character into factor variables
 world_rabies_data <- transform(world_rabies_data, cluster=as.factor(cluster))
 
-# Filter countries by clusters
+###### Filter countries by clusters
 asia2 <- world_rabies_data %>% filter(cluster == 'Asia 2')
 asia3 <- world_rabies_data %>% filter(cluster == 'Asia 3')
 asia4 <- world_rabies_data %>% filter(cluster == 'Asia 4')
@@ -139,7 +193,7 @@ eurasia <- world_rabies_data %>% filter(cluster == 'Eurasia')
 middle_east <- world_rabies_data %>% filter(cluster == 'Middle East')
 
 
-#### 7. Q fever, Netherlands. DOI: https://doi.org/10.1016/j.prevetmed.2013.06.002
+#### 8. Q fever, Netherlands. DOI: https://doi.org/10.1016/j.prevetmed.2013.06.002
 
 qfever_daly <- sort(c(2462, 2758, 2165, 2623, 2301,
                       2483, 2455, 2956, 1968, 2865,
@@ -164,89 +218,11 @@ netherlands <- list(
   gni = mean(c(49110, 52670, 53670, 53910, 54480))       # GNI over 2007-2011
   )
 
-
-#### 8. Rabies, Africa and Asia. DOI: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2626230/pdf/15976877.pdf
-
-worldbank_groups <- read.csv("worldbank_groups.csv")
-worldbank_groups <- select(worldbank_groups, c(2,5))
-colnames(worldbank_groups) <- c("region", "country")
-
-worldbank<- read.csv("C:\\Users\\lnogue\\Downloads\\worldbankdata.csv")
-
-# Select GNI from 2002
-gni_africa_asia <- select(worldbank, c(1,47))
-colnames(gni_africa_asia) <- c("country", "gni_2002")
-
-
-# Join dataset with specific condition
-rabies_data_africa_asia <- left_join(worldbank_groups,
-                                     gni_africa_asia, by = c('country' = 'country'))
-
-
-# Filter countries 
-south_asia_rabies <- rabies_data_africa_asia %>% filter(region == 'South Asia')
-# Delete rows by position: selecting countries included in the study
-south_asia_rabies <- south_asia_rabies %>% 
-  filter(!row_number() %in% c(1, 6)) 
-
-
-east_asia_pacific_rabies <- rabies_data_africa_asia %>% filter(region == 'East Asia & Pacific')
-# Selecting countries included in the study
-east_asia_pacific_rabies <- east_asia_pacific_rabies %>% 
-  filter(row_number() %in% c(3, 4, 9, 11, 13, 14, 17, 18, 20, 24, 26, 31, 35)) 
-
-# Bind rows of two dataframes for Africa
-asia_rabies <- bind_rows(south_asia_rabies,east_asia_pacific_rabies)
-
-#  Mean GNI for Asia
-gni_asia <- mean(asia_rabies$gni_2002)
-
-
-# Africa
-africa_rabies <- rabies_data_africa_asia %>% filter(region == 'Middle East & North Africa')
-africa_rabies <- africa_rabies %>% 
-  filter(row_number() %in% c(4, 5, 12, 13, 20))
-
-africa_subsaharan_rabies <- rabies_data_africa_asia %>% filter(region == 'Sub-Saharan Africa')
-africa_subsaharan_rabies  <- africa_subsaharan_rabies  %>% 
-  filter(!row_number() %in% c(11,12,27, 37,38, 39,40, 41)) 
-
-# Bind rows of two dataframes for Africa
-africa_rabies <- bind_rows(africa_rabies,africa_subsaharan_rabies)
-
-# Convert character into numeric variables
-gni_africa <- transform(africa_rabies, gni_2002 = as.numeric(gni_2002))
-
-
-# Remove rows with NA value in any column
-gni_africa <- gni_africa %>%
-    na.omit(gni_2002)
-
-# Mean GNI for Africa
-gni_africa <- mean(gni_africa$gni_2002)
-
-rabies_africa_asia <- list(
-  daly_africa = c(217954, 1449114),
-  daly_asia = c(302324, 1983646),
-  daly_total = c(799615, 2984109),
-  daly_no_tx = c(4848684,15264050),        # No post-exposure tx
-  livestock_loss = c(11000000,13700000),
-  livestock_loss_africa = c(1500000, 1900000),
-  livestock_loss_asia = c(9400000,11800000),
-  #gni_china = 1100,
-  #gni_india = 460,
-  gni_africa = 915,
-  gni_asia = 2550,
-  gni_total = 1684)
- 
-
-
 #### 9. Cysticercosis (Taenia solium), Tanzania. DOI: https://doi.org/10.1016/j.actatropica.2015.12.021
 tanzania <- list(
   daly = c(9136,72078),           # Lower and upper bound 95% UI
   pig_loss = c(1095960, 5366038),      
   gni = 810)                     # Gross National Income in the year of the study
-
 
 
 #### 10. Rabies, Viet Nam. DOI: 10.1371/journal.pntd.0006866
@@ -257,7 +233,6 @@ vietnam <-  list(
   livestock_loss_mean = 1034422,
   gni = c(630,720,840,980,1110,1250,1370,1540,1720,1880)
   )
-
 
 #### 11. Rabies, Kazakhstan. DOI: 10.1371/journal.pntd.0004889
 kz_rabies <- list(
@@ -296,8 +271,6 @@ nz <-  list(
   pi_total_loss = c(3750000,15480000),
   gni_mean = 40737
 )
-
-
 
 #### 14. Brucella, Anthrax, Tularemia, CCHF, Rabies, Cystic Echinococcosis,
 ####     Toxoplasmosis; Turkey. DOI: 10.33988/auvfd.789598
