@@ -699,4 +699,13 @@ quantile(zdaly_anthrax_total_animal, c(0.025,0.5,0.975))
 
 zdaly_total_turkey <- turkey_daly_total + ale_total_turkey
 quantile(zdaly_total_turkey, c(0.025,0.5,0.975))  
+
+## Global zDALYs
+ global_zdaly <- zdaly_rabies_africa_asia + world_CE_zdaly_unadj + china_CE_zdaly2 +
+   mozambique_zdaly1 + cameroon_zdaly + peru_zdaly + zdaly_total_rabies_world2 +
+    netherlands_zdaly + tanzania_zdaly + vietnam_zdaly_total + zdaly_total_kz + 
+    zdaly_brucellosis_kz + nz_daly_total + zdaly_total_turkey
+    
+ quantile(global_zdaly , c(0.025,0.5,0.975))  
+
 ```    
