@@ -164,7 +164,7 @@ netherlands <- list(
 
 #### 8. Rabies, Africa and Asia. DOI: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2626230/pdf/15976877.pdf
 
-worldbank_groups <- read.csv("C:\\Users\\lnogue\\Downloads\\worldbank_groups.csv")
+worldbank_groups <- read.csv("worldbank_groups.csv")
 worldbank_groups <- select(worldbank_groups, c(2,5))
 colnames(worldbank_groups) <- c("region", "country")
 
