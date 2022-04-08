@@ -126,8 +126,7 @@ peru <- list(
 #### 7. Rabies, Worldwide. DOI: https://doi.org/10.1371/journal.pntd.0003709
 world_rabies <- list(
   daly = c(1316000,10519000),              # lower and upper bound 95% CI
-  animal_loss = 2667195,
-  #animal_loss = 512101465,              # Livestock losses  
+  animal_loss = 2667195,                # Livestock losses  
   gni = 3450                          # Gross National Income provided in the study
 )   
 
