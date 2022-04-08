@@ -299,4 +299,3 @@ turkey <- list(
   total_animal_loss = c(12048065, 20203818, 49094994),
   gni_mean = 10913
 )
-  
