@@ -4,7 +4,6 @@
 
 ### GNI from https://data.worldbank.org/indicator/NY.GNP.PCAP.CD
 
-
 #### 1. Cystic echinococcosis, Worldwide. DOI: 10.3201/eid1202.050499 
 world_CE <- list(
   daly_unadjusted = c(218515,366133),                   # Unadjusted DALY: lower and upper bound 95% CI 
@@ -69,7 +68,7 @@ library(dplyr)
 library(tidyr)
 
 # Dataset Worldbank
-worldbank<- read.csv("C:\\Users\\lnogue\\Downloads\\worldbankdata.csv")
+worldbank<- read.csv("worldbankdata.csv")
 
 
 gni <- select(worldbank, c(1,55))
