@@ -434,7 +434,10 @@ netherlands_ALE_2009 <- netherlands_animal_loss_2009/ netherlands$gni_2009
 
 netherlands_ALE_2010 <- netherlands_animal_loss_2010/ netherlands$gni_2010
 
-netherlands_ALE_2011 <- netherlands_animal_loss_2011/ netherlands$gni_2011   
+netherlands_ALE_2011 <- netherlands_animal_loss_2011/ netherlands$gni_2011
+
+netherlands_ALE_total <- (netherlands_ALE_2007 + netherlands_ALE_2008  +
+   netherlands_ALE_2009 + netherlands_ALE_2010 + netherlands_ALE_2011) / 5
 
 ##### zDALY estimation
 netherlands_zdaly <- runif(n, min = netherlands$daly[1],
