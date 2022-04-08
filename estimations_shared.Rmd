@@ -695,5 +695,4 @@ quantile(zdaly_anthrax_total_animal, c(0.025,0.5,0.975))
 
 zdaly_total_turkey <- turkey_daly_total + ale_total_turkey
 quantile(zdaly_total_turkey, c(0.025,0.5,0.975))  
-```
-       
+```    
