@@ -4,6 +4,14 @@
 
 ### GNI from https://data.worldbank.org/indicator/NY.GNP.PCAP.CD
 
+
+
+# Load libraries
+library(dplyr)
+library(tidyr)
+
+
+
 #### 1. Cystic echinococcosis, Worldwide. DOI: 10.3201/eid1202.050499 
 world_CE <- list(
   daly_unadjusted = c(218515,366133),                   # Unadjusted DALY: lower and upper bound 95% CI 
@@ -62,10 +70,6 @@ world_rabies <- list(
   #animal_loss = 512101465,              # Livestock losses  
   gni = 3450                          # Gross National Income provided in the study
 )   
-
-# Load libraries
-library(dplyr)
-library(tidyr)
 
 # Dataset Worldbank
 worldbank<- read.csv("worldbankdata.csv")
